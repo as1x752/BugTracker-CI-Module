@@ -14,34 +14,35 @@ parent::__construct();
 		
 		$data['module'] = "bugtracker";
 		$data['view_file'] = "display";
-		echo Modules::run('templates/spitfire', $data);
+		echo Modules::run('templates/new_spitfire', $data);
 		
 	}
 	
 	function create() {
 		$update_id = $this->uri->segment(3);
 		
+		$submit = $this->input->post('submit', TRUE);
 		
 		if (!isset($update_id)) {
 			$update_id = $this->input->post('update_id', TRUE);
 		}
 		
-		$submit = $this->input->post('submit', TRUE);
-		
 		if ($submit=="Submit")
 		{
 				//get the variables
 				$data = $this->get_data_from_post();
-				$data['ID'] = $update_id;
 
 				if (is_numeric($update_id))
 				{
 					//update the item details
+					$query = $this->get_where($update_id);
+					$num_rows = $query->num_rows();
+					
 					$this->_update($update_id,$data);
 					$flash_msg = "The bug details were successfully updated!";
 					$value = "<div class='alert alert-success' role='alert'>".$flash_msg."</div>";
 					$this->session->set_flashdata('item', $value);
-					redirect('bugtracker/create/'.$update_id);
+					redirect('bugtracker/view/');
 				}
 				else
 				{
@@ -89,11 +90,11 @@ parent::__construct();
 	}
 	
 	function delete($data) {
-		//$delete_id = $this->uri->segment(3);
+		$delete_id = $this->uri->segment(3);
 		
-		//if (is_numeric($delete_id)) {
-			$this->_delete($data);
-		//}
+		if (is_numeric($delete_id)) {
+			$this->_delete($delete_id);
+		}
 		redirect('bugtracker/view');
 	}
 
